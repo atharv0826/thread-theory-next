@@ -1,10 +1,30 @@
-import StackObj, { Stack } from "./sdk";
+import StackObj, { 
+  Stack, 
+  createStack, 
+  createStackHelpers, 
+  setLivePreviewQuery,
+  LivePreviewQueryParams 
+} from "./sdk";
 import { addEditableTags } from "@contentstack/utils";
 
+/**
+ * Creates a Stack instance configured for live preview.
+ * For SSR, this creates a new instance per request to avoid cross-request contamination.
+ */
+function getStackForRequest(searchParams?: LivePreviewQueryParams | null) {
+  const stack = createStack();
+  setLivePreviewQuery(stack, searchParams);
+  return stack;
+}
+
 export const getHomePageRes = async (
-  locale = null
+  locale: string | null = null,
+  searchParams?: LivePreviewQueryParams | null
 ) => {
-  const response: any = (await StackObj.getEntry({
+  const stack = getStackForRequest(searchParams);
+  const helpers = createStackHelpers(stack);
+  
+  const response: any = await helpers.getEntry({
     contentTypeUid: "home_page",
     referenceFieldPath: [
       "page_sections.featured_products.products",
@@ -15,7 +35,7 @@ export const getHomePageRes = async (
       "page_sections.collection_highlight.description"
     ],
     locale,
-  }));
+  });
   
   if (response && response.length > 0) {
     const entries = Array.isArray(response[0]) ? response[0] : response;
@@ -31,16 +51,20 @@ export const getHomePageRes = async (
 };
 
 export const getAboutPageRes = async (
-  locale = null
+  locale: string | null = null,
+  searchParams?: LivePreviewQueryParams | null
 ) => {
-  const response: any = (await StackObj.getEntry({
+  const stack = getStackForRequest(searchParams);
+  const helpers = createStackHelpers(stack);
+  
+  const response: any = await helpers.getEntry({
     contentTypeUid: "about_page",
     referenceFieldPath: [],
     jsonRtePath: [
       "page_components.widget.description"
     ],
     locale,
-  }));
+  });
   
   if (response && response.length > 0) {
     const entries = Array.isArray(response[0]) ? response[0] : response;
@@ -55,9 +79,15 @@ export const getAboutPageRes = async (
   return null;
 };
 
-export const getHeaderRes = async (locale = null) => {
+export const getHeaderRes = async (
+  locale: string | null = null,
+  searchParams?: LivePreviewQueryParams | null
+) => {
   try {
-    const response: any = await StackObj.getEntryByUid({
+    const stack = getStackForRequest(searchParams);
+    const helpers = createStackHelpers(stack);
+    
+    const response: any = await helpers.getEntryByUid({
       contentTypeUid: "header_v2",
       entryUid: "bltdf9b155a6ba1861b",
       referenceFieldPath: [],
@@ -76,9 +106,16 @@ export const getHeaderRes = async (locale = null) => {
   return null;
 };
 
-export const getProductRes = async (url: string, locale = null) => {
+export const getProductRes = async (
+  url: string,
+  locale: string | null = null,
+  searchParams?: LivePreviewQueryParams | null
+) => {
   try {
-    const response: any = await StackObj.getEntryByUrl({
+    const stack = getStackForRequest(searchParams);
+    const helpers = createStackHelpers(stack);
+    
+    const response: any = await helpers.getEntryByUrl({
       contentTypeUid: "product",
       entryUrl: url,
       referenceFieldPath: ["related_products"],
@@ -86,7 +123,6 @@ export const getProductRes = async (url: string, locale = null) => {
     });
       
     if (response) {
-      // getEntryByUrl might return [[entry], count] or [entry] depending on the internal wrap.
       const entries = Array.isArray(response[0]) ? response[0] : (Array.isArray(response) ? response : [response]);
       const entry = entries?.[0];
       
@@ -102,9 +138,15 @@ export const getProductRes = async (url: string, locale = null) => {
   return null;
 };
 
-export const getFooterRes = async (locale = null) => {
+export const getFooterRes = async (
+  locale: string | null = null,
+  searchParams?: LivePreviewQueryParams | null
+) => {
   try {
-    const response: any = await StackObj.getEntryByUid({
+    const stack = getStackForRequest(searchParams);
+    const helpers = createStackHelpers(stack);
+    
+    const response: any = await helpers.getEntryByUid({
       contentTypeUid: "footer_v2",
       entryUid: "bltda90f941da9b637c",
       referenceFieldPath: [],
@@ -123,9 +165,15 @@ export const getFooterRes = async (locale = null) => {
   return null;
 };
 
-export const getCollectionsRes = async (locale = null) => {
+export const getCollectionsRes = async (
+  locale: string | null = null,
+  searchParams?: LivePreviewQueryParams | null
+) => {
   try {
-    const response: any = await StackObj.getEntryByUid({
+    const stack = getStackForRequest(searchParams);
+    const helpers = createStackHelpers(stack);
+    
+    const response: any = await helpers.getEntryByUid({
       contentTypeUid: "collections",
       entryUid: "blt7de23544cd2404d7",
       referenceFieldPath: ["reference"],
@@ -144,9 +192,16 @@ export const getCollectionsRes = async (locale = null) => {
   return null;
 };
 
-export const getCategoryRes = async (url: string, locale = null) => {
+export const getCategoryRes = async (
+  url: string,
+  locale: string | null = null,
+  searchParams?: LivePreviewQueryParams | null
+) => {
   try {
-    const response: any = await Stack.ContentType('category')
+    const stack = getStackForRequest(searchParams);
+    setLivePreviewQuery(stack, searchParams);
+    
+    const response: any = await stack.ContentType('category')
       .Query()
       .where('url', url)
       .language(locale || 'en-us')
@@ -169,9 +224,15 @@ export const getCategoryRes = async (url: string, locale = null) => {
   return null;
 };
 
-export const getProductsByCategory = async (categoryUid: string, locale = null) => {
+export const getProductsByCategory = async (
+  categoryUid: string,
+  locale: string | null = null,
+  searchParams?: LivePreviewQueryParams | null
+) => {
   try {
-    const productQuery = Stack.ContentType("product").Query();
+    const stack = getStackForRequest(searchParams);
+    
+    const productQuery = stack.ContentType("product").Query();
     
     productQuery
       .where("category.uid", categoryUid)
