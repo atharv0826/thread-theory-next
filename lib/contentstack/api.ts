@@ -118,7 +118,7 @@ export const getProductRes = async (
     const response: any = await helpers.getEntryByUrl({
       contentTypeUid: "product",
       entryUrl: url,
-      referenceFieldPath: ["related_products"],
+      referenceFieldPath: ["related_products", "related_products.product_images"],
       locale,
     });
       
@@ -255,4 +255,66 @@ export const getProductsByCategory = async (
   }
   
   return [];
+};
+
+export const getPoliciesListingRes = async (
+  locale: string | null = null,
+  searchParams?: LivePreviewQueryParams | null
+) => {
+  try {
+    const stack = getStackForRequest(searchParams);
+    const helpers = createStackHelpers(stack);
+    
+    const response: any = await helpers.getEntryByUid({
+      contentTypeUid: "policies_listing_page",
+      entryUid: "blt0cd04799096f849b",
+      referenceFieldPath: ["policies"],
+      jsonRtePath: [],
+      locale,
+    });
+
+    if (response) {
+      addEditableTags(response, "policies_listing_page", true, locale || "en-us");
+      return response;
+    }
+  } catch (error) {
+    console.error("Error fetching Policies Listing page:", error);
+  }
+  
+  return null;
+};
+
+export const getPolicyRes = async (
+  url: string,
+  locale: string | null = null,
+  searchParams?: LivePreviewQueryParams | null
+) => {
+  try {
+    const stack = getStackForRequest(searchParams);
+    const helpers = createStackHelpers(stack);
+    
+    const response: any = await helpers.getEntryByUrl({
+      contentTypeUid: "policy_page",
+      entryUrl: url,
+      referenceFieldPath: [],
+      jsonRtePath: [
+        "body_sections.rich_text_section.body"
+      ],
+      locale,
+    });
+      
+    if (response) {
+      const entries = Array.isArray(response[0]) ? response[0] : (Array.isArray(response) ? response : [response]);
+      const entry = entries?.[0];
+      
+      if (entry) {
+        addEditableTags(entry, "policy_page", true, locale || "en-us");
+        return entry;
+      }
+    }
+  } catch (error) {
+    console.error("Error fetching individual policy by url:", error);
+  }
+  
+  return null;
 };
