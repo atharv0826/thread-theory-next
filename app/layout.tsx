@@ -6,7 +6,7 @@ import FooterClient from "../components/layout/FooterClient";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Aurum Apparel - Modern Clothing",
+  title: "Thread Theory - Modern Clothing",
   description: "Next Generation Clothing Store",
 };
 
