@@ -89,7 +89,7 @@ export const getHeaderRes = async (
     
     const response: any = await helpers.getEntryByUid({
       contentTypeUid: "header_v2",
-      entryUid: "bltdf9b155a6ba1861b",
+      entryUid: process.env.NEXT_PUBLIC_HEADER_V2_UID as string,
       referenceFieldPath: [],
       jsonRtePath: [],
       locale,
@@ -148,7 +148,7 @@ export const getFooterRes = async (
     
     const response: any = await helpers.getEntryByUid({
       contentTypeUid: "footer_v2",
-      entryUid: "bltda90f941da9b637c",
+      entryUid: process.env.NEXT_PUBLIC_FOOTER_V2_UID as string,
       referenceFieldPath: [],
       jsonRtePath: [],
       locale,
@@ -175,7 +175,7 @@ export const getCollectionsRes = async (
     
     const response: any = await helpers.getEntryByUid({
       contentTypeUid: "collections",
-      entryUid: "blt7de23544cd2404d7",
+      entryUid: process.env.NEXT_PUBLIC_COLLECTIONS_UID as string,
       referenceFieldPath: ["reference"],
       jsonRtePath: [],
       locale,
@@ -267,7 +267,7 @@ export const getPoliciesListingRes = async (
     
     const response: any = await helpers.getEntryByUid({
       contentTypeUid: "policies_listing_page",
-      entryUid: "blt0cd04799096f849b",
+      entryUid: process.env.NEXT_PUBLIC_POLICIES_LISTING_UID as string,
       referenceFieldPath: ["policies"],
       jsonRtePath: [],
       locale,
